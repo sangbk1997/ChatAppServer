@@ -10,6 +10,7 @@ exports.create = (value) => {
 
 // FETCH all Messengers
 exports.findAll = () => {
+    var a = 10;
     return Messenger.findAll();
 };
 
