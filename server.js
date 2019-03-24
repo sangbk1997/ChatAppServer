@@ -1,7 +1,9 @@
 var express = require('express');
-var app = express();
 var bodyParser = require('body-parser');
+var cors = require('cors');
+var app = express();
 app.use(bodyParser.json())
+app.use(cors());
 
 const db = require('./app/config/db.config.js');
 
@@ -15,7 +17,7 @@ require('./app/route/socket.route')(app);
 require('./app/route/app.route')(app);
 
 // Create a Server
-var server = app.listen(8081, function () {
+var server = app.listen(80, function () {
 
     var host = server.address().address
     var port = server.address().port

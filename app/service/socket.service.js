@@ -1,10 +1,17 @@
 var axios = require('axios');
-var redisServer = require('./redis.service');
-exports.listenSub = (idChannel, idUser) => {
-    return {channel: idChannel};
+var hostPushStream = 'http://172.20.30.107';
+var socket = {
+    subMessage: (idChannel, idUser) => {
+        var result = {channel: idChannel};
+        console.log(result);
+        return result;
+    },
+
+    pubMessage: (idChannel, message, idUser) => {
+        console.log(idChannel + 'channel');
+        var url = hostPushStream + '/pub?id=' + idChannel;
+        return axios.post(url, encodeURIComponent(JSON.stringify(message)));
+    }
 }
 
-exports.listenPub = (message, idChannel, idUser) => {
-    var url = 'http://172.20.30.107/pub?id=' + idChannel;
-    return axios.post(url, encodeURIComponent(JSON.stringify(message)));
-}
+module.exports = socket;

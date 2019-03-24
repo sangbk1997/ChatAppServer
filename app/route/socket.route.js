@@ -1,15 +1,19 @@
 module.exports = function (app) {
 
-    var socketService = require('../service/socket.service');
-    var redisService = require('../service/redis.service');
-    var redisApp = redisService.redisApp;
-    var redisPushStream = redisService.redisPushStream;
-
+    const socketService = require('../service/socket.service');
+    const messengerService = require('../service/messenger.service');
+    const redis = require('../config/redis.config');
+    const redisApp = redis.redisApp;
+    const redisPushStream = redis.redisPushStream;
     app.get('/ws', function (req, res) {
-        res.send(socketService.listenPub());
+        console.log(req);
+        res.send(socketService.subMessage('ch0', 'user0'));
     });
 
     app.post('/pub', function (req, res) {
-        res.send(redisService.saveMessageToRedis(req.body, redisPushStream));
+        console.log(req);
+        console.log(messengerService);
+        res.send(messengerService.set('message', req.body, redisApp));
+        res.send(messengerService.set('message', req.body, redisPushStream));
     });
 }
