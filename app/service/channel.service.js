@@ -57,7 +57,7 @@ var messengerService = {
                         console.log("Error save to DB");
                         messengerService.set(key, value, redisType);
                     })
-                }else{
+                } else {
                     socket.pubMessage(channelId, value, 'user01').then(res => {
                         console.log('Pub message ');
                         console.log(res);

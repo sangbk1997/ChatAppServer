@@ -21,6 +21,7 @@ db.sequelize = sequelize;
 
 //Models/tables
 db.messenger = require('../model/messenger.model.js')(sequelize, Sequelize);
-
+db.user = require('../model/user.model')(sequelize, Sequelize);
+db.channel = require('../model/channel.model')(sequelize, Sequelize);
 
 module.exports = db;

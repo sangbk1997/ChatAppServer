@@ -1,71 +1,75 @@
-const db = require('../config/db.config.js');
 const redis = require('../config/redis.config');
 const socket = require('./socket.service');
-const Messenger = db.messenger;
 const redisApp = redis.redisApp;
 const redisPushStream = redis.redisPushStream;
+var $bean = require('../utils/hyd-bean-utils');
 
-var messengerService = {
+var baseService = {
     // CRUD with DB
 
     // Post a Messenger
-    saveMessageDB: (value) => {
-        return Messenger.create({
-            message: value
-        });
+    doInsert: (value, modelType) => {
+        var objStorage = {};
+        // console.log(modelType.mapObj)
+        for (key in modelType.mapObj) {
+            objStorage[modelType.mapObj[key].title] = value[key];
+        }
+        return modelType.mapTable.create(objStorage);
     },
 
 // FETCH all Messengers
-    findAllMessageDB: () => {
-        return Messenger.findAll();
+    list: (modelType) => {
+        return modelType.mapTable.findAll();
     },
 
 // Find a Messenger by Id
-    findByPkMessageDB: (messengerId) => {
-        return Messenger.findByPk(messengerId);
+    findById: (id, modelType) => {
+        return modelType.mapTable.findByPk(id);
     },
 
 // Update a Messenger
-    updateMessageDB: (messengerId, message) => {
-        const id = messengerId;
-        return Messenger.update({message: message},
-            {where: {id: id}}
+    doUpdate: (id, value, modelType) => {
+        var objStorage = {};
+        for (key in modelType.mapObj) {
+            objStorage[modelType.mapObj[key].title] = value[key];
+        }
+        return modelType.mapTable.update(objStorage,
+            {where: {'id': id}}
         );
     },
 
 // Delete a Messenger by Id
-    deleteMessageDB: (messengerId) => {
-        const id = messengerId;
-        return Messenger.destroy({
+    doDelete: (id, modelType) => {
+        return modelType.mapTable.destroy({
             where: {id: id}
         });
     },
 
 // CRUD with Redis
 
-    set: (key, value, redisType, channelId) => {
-        redisType.set(key, value, function (err, reply) {
+    setRedis: (key, value, redisType, channelId, modelType) => {
+        redisType.set(key, $bean.getJson(value), function (err, reply) {
             if (!err) {
                 // console.log('Luu thanh cong vao redis');
                 // console.log('Get data ' + messengerService.get(key, redisType));
                 if (redisType == redisApp) {
-                    messengerService.saveMessageDB(value).then(function (res) {
+                    baseService.doInsert(value, modelType).then(function (res) {
                         // console.log('Set thanh cong va DB ' + res);
-                        messengerService.delete(key, redisType);
-                        messengerService.get(key, redisType);
+                        baseService.deleteRedis(key, redisType);
+                        baseService.getRedis(key, redisType);
                     }).catch(function (err) {
                         console.log("Error save to DB");
-                        messengerService.set(key, value, redisType);
+                        baseService.setRedis(key, value, redisType, channelId, modelType);
                     })
-                }else{
-                    socket.pubMessage(channelId, value, 'user01').then(res => {
+                } else {
+                    socket.pubMessage(channelId, value, '1').then(res => {
                         console.log('Pub message ');
                         console.log(res);
-                        messengerService.delete(key, redisType);
-                        messengerService.get(key, redisType);
+                        baseService.deleteRedis(key, redisType);
+                        baseService.getRedis(key, redisType);
                     }).catch(err => {
                         console.log('Error pub message');
-                        messengerService.set(key, value, redisType);
+                        baseService.setRedis(key, value, redisType, channelId, modelType);
                     })
                 }
                 return JSON.stringify({key: value});
@@ -75,7 +79,7 @@ var messengerService = {
         });
     },
 
-    get: (key, redisType) => {
+    getRedis: (key, redisType) => {
         redisType.get(key, function (err, reply) {
             if (err) {
                 throw err;
@@ -84,7 +88,7 @@ var messengerService = {
         });
     },
 
-    isExist: (key, redisType) => {
+    isExistRedis: (key, redisType) => {
         redisType.exists('language', function (err, reply) {
             if (!err) {
                 if (reply === 1) {
@@ -96,7 +100,7 @@ var messengerService = {
         });
     },
 
-    delete: (key, redisType) => {
+    deleteRedis: (key, redisType) => {
         redisType.del(key, function (err, reply) {
             if (!err) {
                 if (reply === 1) {
@@ -108,9 +112,9 @@ var messengerService = {
         });
     },
 
-    expire: (key, time, redisType) => {
+    expireRedis: (key, time, redisType) => {
         redisType.expire(key, time); // Expirty time for 30 seconds.
     }
 }
 
-module.exports = messengerService;
+module.exports = baseService;

@@ -13,6 +13,8 @@ db.sequelize.sync().then(() => {
 });
 
 require('./app/route/messenger.route')(app);
+require('./app/route/user.route')(app);
+require('./app/route/channel.route')(app);
 require('./app/route/socket.route')(app);
 require('./app/route/app.route')(app);
 
