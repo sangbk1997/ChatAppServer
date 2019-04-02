@@ -1,13 +1,14 @@
-const db = require('../config/db.config');
+const db = require('../common/config/db.config');
 const userService = require('../service/user.service');
 const baseService = require('../service/base.service');
-var userObj = require('../obj/userObj');
-var $bean = require('../utils/hyd-bean-utils');
+var userModel = require('../model/user.model');
+var $bean = require('../common/utils/hyd-bean-utils');
 var modelType = {
     mapTable: db.user,
-    mapObj: userObj
+    mapObj: userModel
 }
 module.exports = function (app) {
+
     app.post('/users', function (req, res) {
         var result = baseService.doInsert(req.body, modelType).then(function (data) {
             console.log(data);

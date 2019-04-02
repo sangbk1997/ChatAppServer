@@ -1,64 +1,35 @@
-const db = require('../config/db.config');
+const db = require('../common/config/db.config');
 const channelService = require('../service/channel.service');
 const baseService = require('../service/base.service');
-var channelObj = require('../obj/channelObj');
-var $bean = require('../utils/hyd-bean-utils');
+var channelModel = require('../model/channel.model');
+var $bean = require('../common/utils/hyd-bean-utils');
 var modelType = {
     mapTable: db.channel,
-    mapObj: channelObj
+    mapObj: channelModel
 }
 module.exports = function (app) {
-    // Create a new Customer
     app.post('/channels', function (req, res) {
-        // res.send(redisServer.saveMessageToRedis(req.body, redisPushStream));
-        // res.send(channels.create(req.body));
-        // Sua doi
-        // var result = channelservice.saveMessageDB($bean.getJson(req.body));
-        // console.log(result);
-        // res.send(result);
-
-        var result = baseService.doInsert(req.body, modelType).then(function (data) {
-            console.log(data);
+        baseService.doInsert(req.body, modelType).then(function (data) {
+            console.log('PostChannel : ' + data);
             res.send(data);
         })
     });
 
-    // Retrieve all Customer
     app.get('/channels', function (req, res) {
-        // channelservice.findAllMessageDB().then(function (data) {
-        //     console.log(data);
-        //     res.send(data);
-        // });
-
         baseService.list(modelType).then(function (data) {
-            console.log(data);
+            console.log('Channels : ' + data);
             res.send(data);
         });
     });
 
-    // Retrieve a single Customer by Id
     app.get('/channels/:channelId', function (req, res) {
-        // channelservice.findByPkMessageDB(req.params.channelId).then(function (data) {
-        //     console.log(data);
-        //     res.send(data);
-        // });
-
         baseService.findById(req.params.channelId, modelType).then(function (data) {
-            console.log(data);
+            console.log('Get channel : ' + data);
             res.send(data);
         });
     });
 
-    // Update a Customer with Id
     app.put('/channels/:channelId', function (req, res) {
-        // channelservice.updateMessageDB(req.params.channelId, $bean.getJson(req.body)).then(function (data) {
-        //     channelservice.findByPkMessageDB(req.params.channelId).then(data => {
-        //         res.send(data);
-        //     }).catch(err => {
-        //         console.log(err);
-        //     })
-        // });
-
         baseService.doUpdate(req.params.channelId, req.body, modelType).then(function (data) {
             baseService.findById(req.params.channelId, modelType).then(data => {
                 res.send(data);
@@ -68,16 +39,40 @@ module.exports = function (app) {
         });
     });
 
-    // Delete a Customer with Id
     app.delete('/channels/:channelId', function (req, res) {
-        // channelservice.deleteMessageDB(req.params.channelId).then(function () {
-        //     var message = 'Successful !';
-        //     res.send({'message': message});
-        // });
-
         baseService.doDelete(req.params.channelId, modelType).then(function () {
             var message = 'Successful !';
             res.send({'message': message});
+        });
+    });
+
+    app.get('/channelsByUser/:userId', function (req, res) {
+        channelService.listChannelByUser(req.params.userId).then(function (data) {
+            res.send(data);
+        });
+    });
+
+    app.get('/channelsByDate/byDate', function (req, res) {
+        channelService.listChannelByCreated().then(function (data) {
+            res.send(data);
+        });
+    });
+
+    app.get('/channelsByAlpha/byDESC', function (req, res) {
+        channelService.listChannelDESC().then(function (data) {
+            res.send(data);
+        });
+    });
+
+    app.get('/channelsByAlpha/byASC', function (req, res) {
+        channelService.listChannelASC().then(function (data) {
+            res.send(data);
+        });
+    });
+
+    app.get('/channelsByNumber/:numberChannel', function (req, res) {
+        channelService.getNumberChannel(req.params.numberChannel).then(function (data) {
+            res.send(data);
         });
     });
 }

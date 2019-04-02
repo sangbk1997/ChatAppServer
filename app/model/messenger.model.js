@@ -1,20 +1,28 @@
-const messengerObj = require('../obj/messengerObj');
-var $bean = require('../utils/hyd-bean-utils');
-module.exports = (sequelize, Sequelize) => {
-    const Messenger = sequelize.define('messenger', {
-        [messengerObj.channelId.title]: {
-            type: Sequelize.STRING
-        },
-        [messengerObj.ownerId.title]: {
-            type: Sequelize.STRING
-        },
-        [messengerObj.message.title]: {
-            type: Sequelize.STRING
-        },
-        [messengerObj.emojiUser.title]: {
-            type: Sequelize.STRING
-        }
-    });
-
-    return Messenger;
+var messengerModel = {
+    id: {
+        title: 'id',
+        value: undefined
+    },
+    channelId: {
+        title: 'channelId',
+        value: undefined
+    },
+    ownerId: {
+        title: 'ownerId',
+        value: undefined
+    },
+    username: {
+        title: 'username',
+        value: undefined
+    },
+    message: {
+        title: 'message',
+        value: undefined
+    },
+    emojiUser: {
+        title: 'emojiUser',
+        value: undefined
+    }
 }
+
+module.exports = messengerModel;

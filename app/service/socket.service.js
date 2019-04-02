@@ -1,15 +1,16 @@
 var axios = require('axios');
-var $bean = require('../utils/hyd-bean-utils');
+var $bean = require('../common/utils/hyd-bean-utils');
 var hostPushStream = 'http://172.20.30.107';
 var socket = {
-    subMessage: (idChannel, idUser) => {
-        var result = {channel: idChannel};
+    subMessage: (channelId, userId) => {
+        var result = {channelId: channelId, userId : userId};
         return result;
     },
 
-    pubMessage: (idChannel, message, idUser) => {
-        var url = hostPushStream + '/pub?id=' + idChannel;
-        return axios.post(url, $bean.encodeObject(message));
+    pubMessage: (messenger) => {
+        var url = hostPushStream + '/pub?id=channel_' + messenger['channelId'];
+        console.log('Pub url ' + url);
+        return axios.post(url, $bean.encodeObject(messenger));
     }
 }
 

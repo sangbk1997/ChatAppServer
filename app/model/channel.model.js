@@ -1,32 +1,40 @@
-const channelObj = require('../obj/channelObj');
-var $bean = require('../utils/hyd-bean-utils');
-module.exports = (sequelize, Sequelize) => {
-    const Channel = sequelize.define('channel', {
-        [channelObj.ownerId.title]: {
-            type: Sequelize.STRING
-        },
-        [channelObj.status.title]: {
-            type: Sequelize.STRING
-        },
-        [channelObj.admins.title]: {
-            type: Sequelize.STRING
-        },
-        [channelObj.members.title]: {
-            type: Sequelize.STRING
-        },
-        [channelObj.title.title]: {
-            type: Sequelize.STRING
-        },
-        [channelObj.avatar.title]: {
-            type: Sequelize.STRING
-        },
-        [channelObj.colorHeader.title]: {
-            type: Sequelize.STRING
-        },
-        [channelObj.backgroundColor.title]: {
-            type: Sequelize.STRING
-        }
-
-    });
-    return Channel;
+var channelModel = {
+    id: {
+        title: 'id',
+        value: undefined
+    },
+    ownerId: {
+        title: 'ownerId',
+        value: undefined
+    },
+    status: {
+        title: 'status',
+        value: undefined
+    },
+    admins: {
+        title: 'admins',
+        value: undefined
+    },
+    members: {
+        title: 'members',
+        value: undefined
+    },
+    title: {
+        title: 'title',
+        value: undefined
+    },
+    avatar: {
+        title: 'avatar',
+        value: undefined
+    },
+    colorHeader: {
+        title: 'colorHeader',
+        value: undefined
+    },
+    backgroundColor: {
+        title: 'backgroundColor',
+        value: undefined
+    }
 }
+
+module.exports = channelModel;

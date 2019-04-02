@@ -1,47 +1,60 @@
-const userObj = require('../obj/userObj');
-var $bean = require('../utils/hyd-bean-utils');
-module.exports = (sequelize, Sequelize) => {
-    const User = sequelize.define('user', {
-        [userObj.username.title]: {
-            type: Sequelize.STRING
-        },
-        [userObj.password.title]: {
-            type: Sequelize.STRING
-        },
-        [userObj.firstName.title]: {
-            type: Sequelize.STRING
-        },
-        [userObj.middleName.title]: {
-            type: Sequelize.STRING
-        },
-        [userObj.lastName.title]: {
-            type: Sequelize.STRING
-        },
-        [userObj.email.title]: {
-            type: Sequelize.STRING
-        },
-        [userObj.avatar.title]: {
-            type: Sequelize.STRING
-        },
-        [userObj.location.title]: {
-            type: Sequelize.STRING
-        },
-        [userObj.phone.title]: {
-            type: Sequelize.STRING
-        },
-        [userObj.birthDay.title]: {
-            type: Sequelize.DATE
-        },
-        [userObj.gender.title]: {
-            type: Sequelize.DECIMAL
-        },
-        [userObj.facebook.title]: {
-            type: Sequelize.STRING
-        },
-        [userObj.systemAdmin.title]: {
-            type: Sequelize.DECIMAL
-        }
-    });
-
-    return User;
+var userModel = {
+    id: {
+        title: 'id',
+        value: undefined
+    },
+    username: {
+        title: 'username',
+        value: undefined
+    },
+    password: {
+        title: 'password',
+        value: undefined
+    },
+    firstName: {
+        title: 'firstName',
+        value: undefined
+    },
+    middleName: {
+        title: 'middleName',
+        value: undefined
+    },
+    lastName: {
+        title: 'lastName',
+        value: undefined
+    },
+    email: {
+        title: 'email',
+        value: undefined
+    },
+    avatar: {
+        title: 'avatar',
+        value: undefined
+    },
+    location: {
+        title: 'location',
+        value: undefined
+    },
+    phone: {
+        title: 'phone',
+        value: undefined
+    },
+    birthDay: {
+        title: 'birthDay',
+        value: undefined
+    },
+    gender: {
+        title: 'gender',
+        value: undefined
+    },
+    facebook: {
+        title: 'facebook',
+        value: undefined
+    },
+    systemAdmin: {
+        title: 'systemAdmin',
+        value: undefined
+    }
 }
+
+module.exports = userModel;

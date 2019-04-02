@@ -1,7 +1,8 @@
-
+const envRedisApp = require('./env').redisApp;
+const envRedisPushstream = require('./env').redisPushstream;
 var redis = require('redis');
-var redisApp = redis.createClient(6379, '172.20.40.132');
-var redisPushStream = redis.createClient(6379, '172.20.30.107');
+var redisApp = redis.createClient(envRedisApp.port, envRedisApp.host);
+var redisPushStream = redis.createClient(envRedisPushstream.port, envRedisPushstream.host);
 
 redisApp.on('connect', function () {
     console.log('RedisApp client connected');

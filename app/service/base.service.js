@@ -1,33 +1,31 @@
-const redis = require('../config/redis.config');
+const redis = require('../common/config/redis.config');
 const socket = require('./socket.service');
+const axios = require('axios');
 const redisApp = redis.redisApp;
 const redisPushStream = redis.redisPushStream;
-var $bean = require('../utils/hyd-bean-utils');
+const hostPushStream = 'http://172.20.30.107';
+var $bean = require('../common/utils/hyd-bean-utils');
 
 var baseService = {
-    // CRUD with DB
 
-    // Post a Messenger
+    // Crud with DB
+
     doInsert: (value, modelType) => {
         var objStorage = {};
-        // console.log(modelType.mapObj)
         for (key in modelType.mapObj) {
             objStorage[modelType.mapObj[key].title] = value[key];
         }
         return modelType.mapTable.create(objStorage);
     },
 
-// FETCH all Messengers
     list: (modelType) => {
         return modelType.mapTable.findAll();
     },
 
-// Find a Messenger by Id
     findById: (id, modelType) => {
         return modelType.mapTable.findByPk(id);
     },
 
-// Update a Messenger
     doUpdate: (id, value, modelType) => {
         var objStorage = {};
         for (key in modelType.mapObj) {
@@ -38,7 +36,6 @@ var baseService = {
         );
     },
 
-// Delete a Messenger by Id
     doDelete: (id, modelType) => {
         return modelType.mapTable.destroy({
             where: {id: id}
@@ -47,34 +44,38 @@ var baseService = {
 
 // CRUD with Redis
 
-    setRedis: (key, value, redisType, channelId, modelType) => {
+    setRedis: (key, value, redisType, channelId, modelType, httpRes) => {
         redisType.set(key, $bean.getJson(value), function (err, reply) {
             if (!err) {
-                // console.log('Luu thanh cong vao redis');
-                // console.log('Get data ' + messengerService.get(key, redisType));
-                if (redisType == redisApp) {
-                    baseService.doInsert(value, modelType).then(function (res) {
-                        // console.log('Set thanh cong va DB ' + res);
-                        baseService.deleteRedis(key, redisType);
-                        baseService.getRedis(key, redisType);
-                    }).catch(function (err) {
-                        console.log("Error save to DB");
-                        baseService.setRedis(key, value, redisType, channelId, modelType);
-                    })
-                } else {
-                    socket.pubMessage(channelId, value, '1').then(res => {
-                        console.log('Pub message ');
-                        console.log(res);
-                        baseService.deleteRedis(key, redisType);
-                        baseService.getRedis(key, redisType);
-                    }).catch(err => {
-                        console.log('Error pub message');
-                        baseService.setRedis(key, value, redisType, channelId, modelType);
-                    })
+                if (!err) {
+                    // console.log('Luu thanh cong vao redis');
+                    // console.log('Get data ' + messengerService.get(key, redisType));
+                    if (redisType == redisApp) {
+                            baseService.doInsert(value, modelType).then(function (res) {
+                            // console.log('Set thanh cong va DB ' + res);
+                            baseService.deleteRedis(key, redisType);
+                            baseService.getRedis(key, redisType);
+                            console.log('Data ');
+                            console.log(res);
+                            httpRes.send(res);
+                        }).catch(function (err) {
+                            console.log("Error save to DB");
+                            baseService.setRedis(key, value, redisType, channelId, modelType);
+                        })
+                    } else {
+                        socket.pubMessage(value).then(res => {
+                            console.log('Pub message ');
+                            console.log(res);
+                            baseService.deleteRedis(key, redisType);
+                            baseService.getRedis(key, redisType);
+                        }).catch(err => {
+                            console.log('Error pub message');
+                            baseService.setRedis(key, value, redisType, channelId, modelType);
+                        })
+                    }
                 }
-                return JSON.stringify({key: value});
             } else {
-                console.log(err);
+                console.log('Error set to redis ' + err);
             }
         });
     },
@@ -82,9 +83,9 @@ var baseService = {
     getRedis: (key, redisType) => {
         redisType.get(key, function (err, reply) {
             if (err) {
+                console.log('Error get ' + key + ' from redis !');
                 throw err;
             }
-            console.log(reply);
         });
     },
 
@@ -92,9 +93,9 @@ var baseService = {
         redisType.exists('language', function (err, reply) {
             if (!err) {
                 if (reply === 1) {
-                    console.log("Key exists");
+                    console.log(key + " exists in redis !");
                 } else {
-                    console.log("Does't exists");
+                    console.log(key + " does't exists in redis !");
                 }
             }
         });
@@ -104,9 +105,9 @@ var baseService = {
         redisType.del(key, function (err, reply) {
             if (!err) {
                 if (reply === 1) {
-                    console.log("Key is deleted");
+                    console.log(key + " is deleted from redis !");
                 } else {
-                    console.log("Does't exists");
+                    console.log(key + " does't exists in redis !");
                 }
             }
         });
